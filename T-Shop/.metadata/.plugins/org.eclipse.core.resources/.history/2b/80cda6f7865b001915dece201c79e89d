@@ -1,0 +1,94 @@
+package comp.server;
+
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.sql.SQLException;
+
+import org.apache.log4j.Logger;
+
+import comp.Access.FacturaAccess;
+import comp.Access.UtilizatorAccess;
+import comp.factura.Factura;
+import comp.utilizatori.Utilizator;
+
+public class Server {
+	final static Logger logger = Logger.getLogger(Server.class);
+
+	public static void main(String[] args) throws SQLException {
+
+		try (ServerSocket serverSocket = new ServerSocket(6282)) {
+
+			logger.info("Connection works");
+			while (true) {
+
+				Socket server = serverSocket.accept();
+				logger.info("Just connected to " + server.getRemoteSocketAddress());
+				ObjectOutputStream out = new ObjectOutputStream(server.getOutputStream());
+				ObjectInputStream in = new ObjectInputStream(new BufferedInputStream(server.getInputStream()));
+
+				String recieved = in.readObject().toString();
+
+				String[] splitted = recieved.split(" ");
+				String command = splitted[0];
+
+				String obj = splitted[1];
+				ObjectInputStream inFs = new ObjectInputStream(new ByteArrayInputStream(obj.getBytes()));
+
+				if (command.equals("inregistrare")) {
+					Utilizator utilizator = (Utilizator) inFs.readObject();
+					logger.info(utilizator.toString());
+					
+					if (UtilizatorAccess.verificareDate(utilizator) != 0) {
+						out.writeObject(0);
+						out.flush();
+					} else {
+						if (UtilizatorAccess.adaugareDate(utilizator)) {
+							out.writeObject(1);
+							out.flush();
+						} else {
+							out.writeObject(0);
+							out.flush();
+						}
+					}
+					
+
+				}
+				if (command.equals("autentificare")) {
+					Utilizator utilizator = (Utilizator) inFs.readObject();
+					logger.info(utilizator.toString());
+					System.out.println(utilizator.toString());
+					System.out.println(UtilizatorAccess.verificareDate(utilizator));
+					System.out.println(utilizator.getUsername());
+					System.out.println(utilizator.getPassword());
+					System.out.println(utilizator.getStatus());
+					out.writeObject(UtilizatorAccess.verificareDate(utilizator));
+					out.flush();
+
+				}
+				if (command.equals("cerere")) {
+					Factura factura = (Factura) inFs.readObject();
+					logger.info(factura.toString());
+					if (FacturaAccess.adaugareFactura(factura)) {
+						out.writeObject(1);
+						out.flush();
+					} else {
+						out.writeObject(0);
+						out.flush();
+					}
+
+				}
+
+			}
+		} catch (IOException | ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+}

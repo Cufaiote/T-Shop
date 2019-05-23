@@ -1,0 +1,5 @@
+package comp.invoice;
+
+public class Invoice {
+
+}

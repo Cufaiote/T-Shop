@@ -1,0 +1,188 @@
+package comp.Access;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+
+import comp.factura.Factura;
+import comp.utilizatori.Client;
+
+public class FacturaAccess {
+	final static Logger logger = Logger.getLogger(FacturaAccess.class);
+
+	public static boolean adaugareFactura(Factura factura) {
+		String url = "jdbc:sqlite:D:\\info\\INFOANIII\\Antrenament\\CSJApl\\CSJApp\\Database.db";
+		try {
+			Connection conn = DriverManager.getConnection(url);
+			PreparedStatement ps = conn.prepareStatement("INSERT INTO Facturi VALUES (?, ?, ?, ?, ?, ?)");
+			ps.setString(1, null);
+			ps.setInt(2, factura.getNrObiecte());
+			ps.setDouble(3, factura.getTotal());
+			ps.setBoolean(4, factura.isStatus());
+			ps.setInt(5, factura.getIdClient());
+			ps.setBoolean(6, factura.isAccepted());
+			ps.execute();
+			logger.info("Factura adaugata cu succes!");
+
+			return true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			logger.error("Adaugare nereusita!");
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public static boolean updateTotal(Factura factura, int discount) {
+		Double newPrice = factura.getTotal() - (factura.getTotal() / discount);
+		String url = "jdbc:sqlite:D:\\info\\INFOANIII\\Antrenament\\CSJApl\\CSJApp\\Database.db";
+		try {
+			Connection conn = DriverManager.getConnection(url);
+			PreparedStatement ps = conn
+					.prepareStatement("UPDATE Facturi SET total = ?, status = 1 WHERE idFactura = ? ");
+			ps.setDouble(1, newPrice);
+			ps.setInt(2, factura.getIdFactura());
+			ps.execute();
+			logger.info("Factura a fost actualizata cu succes!");
+			return true;
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			logger.error("Actualizarea facturii a esuat!");
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public static List<Factura> facturiAcceptate(Client client) {
+		List<Factura> listaFacturi = new ArrayList<>();
+		String url = "jdbc:sqlite:D:\\info\\INFOANIII\\Antrenament\\CSJApl\\CSJApp\\Database.db";
+		try {
+			Connection conn = DriverManager.getConnection(url);
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM Facturi WHERE idUtilizator = ? AND accepted = ?");
+			ps.setInt(1, client.getIdUtilizator());
+			ps.setBoolean(2, true);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				// return true;
+				Factura facturaAux = new Factura();
+				facturaAux.setIdFactura(rs.getInt(1));
+				facturaAux.setNrObiecte(rs.getInt(2));
+				facturaAux.setTotal(rs.getDouble(3));
+				facturaAux.setStatus(rs.getBoolean(4));
+				listaFacturi.add(facturaAux);
+
+			}
+			logger.info("Toate facturile acceptate au fost selectate cu succes!");
+			conn.close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			logger.error("Selectarea tuturor facturilor acceptate a esuat!");
+			e.printStackTrace();
+		}
+
+		return listaFacturi;
+	}
+
+	public static List<Factura> facturiRespinse() {
+
+		List<Factura> listaFacturi = new ArrayList<>();
+		String url = "jdbc:sqlite:D:\\info\\INFOANIII\\Antrenament\\CSJApp\\Database.db";
+		try {
+			Connection conn = DriverManager.getConnection(url);
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM Facturi WHERE accepted = ?");
+
+			ps.setBoolean(1, false);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				// return true;
+				Factura facturaAux = new Factura();
+				facturaAux.setIdFactura(rs.getInt(1));
+				facturaAux.setNrObiecte(rs.getInt(2));
+				facturaAux.setTotal(rs.getDouble(3));
+				facturaAux.setStatus(rs.getBoolean(4));
+				listaFacturi.add(facturaAux);
+			}
+			logger.info("Toate facturile respinse au fost selectate cu succes!");
+
+			conn.close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			logger.error("Eroare la selectarea facturilor respinse!");
+
+			e.printStackTrace();
+		}
+
+		return listaFacturi;
+	}
+
+	public static List<Factura> facturiNeplatite(Client client) {
+		List<Factura> listaFacturiNeplatite = new ArrayList<>();
+		String url = "jdbc:sqlite:D:\\info\\INFOANIII\\Antrenament\\CSJApp\\Database.db";
+		try {
+			Connection conn = DriverManager.getConnection(url);
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM Facturi WHERE idUtilizator = ? AND status = ?");
+			ps.setInt(1, client.getIdUtilizator());
+			ps.setBoolean(2, false);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				// return true;
+				Factura facturaAux = new Factura();
+				facturaAux.setIdFactura(rs.getInt(1));
+				facturaAux.setNrObiecte(rs.getInt(2));
+				facturaAux.setTotal(rs.getDouble(3));
+				facturaAux.setStatus(rs.getBoolean(4));
+				listaFacturiNeplatite.add(facturaAux);
+			}
+			logger.info("Toate facturile neplatite selectate cu succes!");
+			conn.close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			logger.error("Eroare la selectarea facturilor neplatite!");
+
+			e.printStackTrace();
+		}
+
+		return listaFacturiNeplatite;
+	}
+	
+	public static List<Factura> afisareFacturi(Client client) {
+		List<Factura> listaFacturi = new ArrayList<>();
+		String url = "jdbc:sqlite:D:\\info\\INFOANIII\\Antrenament\\CSJApp\\Database.db";
+		try {
+			Connection conn = DriverManager.getConnection(url);
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM Facturi WHERE idUtilizator = ?");
+			ps.setInt(1, client.getIdUtilizator());
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				// return true;
+				Factura facturaAux = new Factura();
+				facturaAux.setIdFactura(rs.getInt(1));
+				facturaAux.setNrObiecte(rs.getInt(2));
+				facturaAux.setTotal(rs.getDouble(3));
+				facturaAux.setStatus(rs.getBoolean(4));
+				listaFacturi.add(facturaAux);
+			}
+			logger.info("Toate facturile selectate cu succes!");
+			conn.close();
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			logger.error("Eroare la selectarea tuturor facturilor!");
+
+			e.printStackTrace();
+		}
+
+		return listaFacturi;
+	}
+	
+}

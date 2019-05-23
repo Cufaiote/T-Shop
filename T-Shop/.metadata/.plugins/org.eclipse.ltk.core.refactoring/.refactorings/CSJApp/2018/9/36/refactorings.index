@@ -1,0 +1,19 @@
+1535892715349	Rename compilation unit 'Utilizator.java'
+1535894052097	Rename package 'comp.DAL'
+1535894367602	Rename type 'CommonDAL'
+1535907542901	Rename type 'Admin1DAL'
+1535907567935	Rename type 'FacturaDAL'
+1535907586213	Rename type 'UtilizatorDAL'
+1535987221661	Rename type 'User'
+1535987244896	Rename field 'rank'
+1535987260907	Rename field 'userId'
+1535987299515	Rename method 'setUserId'
+1535987319646	Rename method 'setRank'
+1535987353032	Rename method 'getUserId'
+1535987370114	Rename method 'getRank'
+1535987777594	Move compilation unit
+1535994047262	Rename resource 'Login.fxml'
+1535994333046	Rename type 'LoginController'
+1535994856846	Move compilation unit
+1536006655523	Delete element
+1536006943343	Rename package 'comp.DALs'

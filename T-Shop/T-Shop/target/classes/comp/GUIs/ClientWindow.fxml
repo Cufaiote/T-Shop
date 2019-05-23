@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="420.0" prefWidth="611.0" xmlns="http://javafx.com/javafx/8.0.151" xmlns:fx="http://javafx.com/fxml/1" fx:controller="comp.GUIs.ClientController">
+	<children>
+		<Label fx:id="welcomeLbl" layoutX="253.0" layoutY="14.0" prefHeight="45.0" prefWidth="130.0" text="Bine ati venit!">
+			<font>
+				<Font size="20.0" />
+			</font>
+		</Label>
+		<Button fx:id="exitBtn" layoutX="417.0" layoutY="355.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="172.0" text="Iesire" />
+		<Button fx:id="totBtn" layoutX="417.0" layoutY="287.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="172.0" text="Toate facturile" />
+		<Button fx:id="neplatitBtn" layoutX="417.0" layoutY="219.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="172.0" text="Facturile neplatite" />
+		<Button fx:id="adaugaBtn" layoutX="417.0" layoutY="121.0" mnemonicParsing="false" prefHeight="45.0" prefWidth="172.0" text="Cosul meu" />
+		<TableView fx:id="tableView" layoutY="76.0" prefHeight="344.0" prefWidth="407.0">
+			<columns>
+				<TableColumn fx:id="facturaClm" prefWidth="75.0" />
+				<TableColumn fx:id="produseClm" prefWidth="75.0" />
+				<TableColumn fx:id="totalClm" prefWidth="75.0" />
+				<TableColumn fx:id="statusClm" prefWidth="75.0" />
+            	<TableColumn fx:id="acceptClm" prefWidth="105.0" />
+			</columns>
+		</TableView>
+	</children>
+</AnchorPane>

@@ -1,0 +1,71 @@
+package comp.Access;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.apache.log4j.Logger;
+
+import comp.utilizatori.Utilizator;
+
+public class UtilizatorAccess {
+	final static Logger logger = Logger.getLogger(UtilizatorAccess.class);
+
+	public static int verificareDate(Utilizator utilizator) throws SQLException {
+		String url = "jdbc:sqlite:D:\\info\\INFOANIII\\Antrenament\\CSJApp\\Database.db";
+		Connection conn = null;
+
+		try {
+			conn = DriverManager.getConnection(url);
+			PreparedStatement ps = conn
+					.prepareStatement("SELECT * FROM Utilizatori WHERE username = ? AND password = ? AND rank=?");
+			ps.setString(1, utilizator.getUsername());
+			ps.setString(2, utilizator.getPassword());
+			ps.setString(3, utilizator.getStatus());
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.next()) {
+				return rs.getInt(1);
+			}
+			logger.info("Datele personale sunt corecte!");
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			logger.error("Eroare la verificarea datelor personale!");
+			e.printStackTrace();
+		} finally {
+			conn.close();
+
+		}
+		return 0;
+	}
+
+	public static boolean adaugareDate(Utilizator utilizator) throws SQLException {
+		String url = "jdbc:sqlite:D:\\info\\INFOANIII\\Antrenament\\CSJApp\\Database.db";
+		Connection conn = null;
+
+		try {
+			conn = DriverManager.getConnection(url);
+			PreparedStatement ps = conn.prepareStatement("INSERT INTO Utilizatori VALUES (?, ?, ?, ?)");
+			ps.setString(1, null);
+			ps.setString(2, utilizator.getUsername());
+			ps.setString(3, utilizator.getPassword());
+			ps.setString(4, utilizator.getStatus());
+			ps.execute();
+			logger.info("Utilizator adaugat cu succes!");
+			
+			return true;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			logger.error("Eroare la verificarea datelor personale!");
+			e.printStackTrace();
+		} finally {
+			conn.close();
+
+		}
+		return false;
+
+	}
+
+}

@@ -1,0 +1,112 @@
+package comp.GUIs;
+
+import java.net.URL;
+import java.util.ResourceBundle;
+
+import org.apache.log4j.Logger;
+
+import comp.Access.InvoiceAccess;
+import comp.invoice.Invoice;
+import comp.users.SalesPersonnel;
+import comp.users.SalesManager;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+
+public class SalesPersonnelController implements Initializable {
+	final static Logger logger = Logger.getLogger(SalesPersonnelController.class);
+
+	static SalesPersonnel staff = new SalesPersonnel();
+
+	@FXML
+	private Button refreshBtn;
+
+	@FXML
+	private Button acceptBtn;
+
+	@FXML
+	private TextField idTxt;
+
+	@FXML
+	private TextField discountTxt;
+
+	@FXML
+	private TableView<Invoice> tableView;
+
+	@FXML
+	private TableColumn<Invoice, Integer> facturaClm;
+
+	@FXML
+	private TableColumn<Invoice, Integer> obiecteClm;
+
+	@FXML
+	private TableColumn<Invoice, Double> totalClm;
+
+	@FXML
+	private TableColumn<Invoice, Boolean> statusClm;
+	
+	@FXML
+	private TableColumn<Invoice, Boolean> acceptClm;
+	ObservableList<Invoice> listaObiecte;
+
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		// TODO Auto-generated method stub
+		afiseazaFacturi();
+		refreshBtn.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+				// TODO Auto-generated method stub
+				afiseazaFacturi();
+			}
+
+		});
+
+		acceptBtn.setOnAction(new EventHandler<ActionEvent>() {
+
+			@Override
+			public void handle(ActionEvent event) {
+
+				if (!discountTxt.getText().equals("") && Integer.parseInt(discountTxt.getText()) <= 10) {
+					Invoice invoice = tableView.getSelectionModel().getSelectedItem();
+					InvoiceAccess.updateTotal(invoice, Integer.parseInt(discountTxt.getText()));
+				} else {
+					Invoice invoice = tableView.getSelectionModel().getSelectedItem();
+					SalesManager.process(invoice, Integer.parseInt(discountTxt.getText()));
+				}
+
+			}
+
+		});
+	}
+
+	public void afiseazaFacturi() {
+		facturaClm.setText("Nr. Factura");
+		statusClm.setText("Status");
+		totalClm.setText("Total");
+		obiecteClm.setText("Nr. Produse");
+		acceptClm.setText("Discount Acceptat");
+		facturaClm.setCellValueFactory(new PropertyValueFactory<Invoice, Integer>("invoiceId"));
+		totalClm.setCellValueFactory(new PropertyValueFactory<Invoice, Double>("total"));
+		statusClm.setCellValueFactory(new PropertyValueFactory<Invoice, Boolean>("status"));
+		obiecteClm.setCellValueFactory(new PropertyValueFactory<Invoice, Integer>("nrfObjects"));
+		acceptClm.setCellValueFactory(new PropertyValueFactory<Invoice, Boolean>("accepted"));
+		listaObiecte = FXCollections.observableArrayList(InvoiceAccess.rejectedInvoices());
+		logger.info(listaObiecte);
+
+		tableView.setItems(listaObiecte);
+
+	}
+
+}
+

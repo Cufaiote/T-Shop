@@ -1,0 +1,47 @@
+package comp.Access;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.log4j.Logger;
+
+import comp.utilizatori.Admin1;
+
+public class Admin1Access {
+	final static Logger logger = Logger.getLogger(Admin1Access.class);
+
+	public static List<Admin1> getAdmins() throws SQLException {
+		List<Admin1> admins = new ArrayList<>();
+		String url = "jdbc:sqlite:D:\\info\\INFOANIII\\Antrenament\\CSJApp\\Database.db";
+		Connection conn = null;
+		try {
+			conn = DriverManager.getConnection(url);
+			PreparedStatement ps = conn.prepareStatement("SELECT * FROM Utilizatori WHERE rank = ?");
+			ps.setString(1, "admin1");
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				Admin1 adminAux = new Admin1();
+				adminAux.setIdUtilizator(rs.getInt(1));
+				adminAux.setUsername(rs.getString(2));
+				adminAux.setPassword(rs.getString(3));
+				adminAux.setStatus(rs.getString(4));
+				admins.add(adminAux);
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} finally {
+			conn.close();
+			logger.info("Admins retuned");
+		}
+		return admins;
+	}
+
+}
+
